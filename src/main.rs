@@ -9,5 +9,5 @@ async fn main() -> Result<(), Error> {
 }
 
 async fn fizz_buzz(_: Value, _: Context) -> Result<Value, Error> {
-    Ok(json!({ "hello": "world" }))
+    Ok(json!({ "statusCode": 200, "body": "{\"hello\": \"world\"}" }))
 }

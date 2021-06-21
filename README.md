@@ -19,16 +19,12 @@ $ cargo build --target x86_64-unknown-linux-gnu --release
 
 ## Deploy
 
-Create a lambda function with a runtime of "provided.al2", the use its name in the command below in place of "
-RuntimeTest". If you are using the default aws cli profile, you can remove the profile flag. Otherwise, set it to your
-profile name.
+This project uses AWS SAM cli to manage deployment to AWS Lambda.
+`sam deploy` uses the aws cli default profile by default, so if you need to use a different profile, you can pass `--profile <your_profile>` to change it.
 
 ```
-$ cp ./target/x86_64-unknown-linux-gnu/release/fbaas-rust ./bootstrap && \
-     zip lambda.zip bootstrap && \
-     rm bootstrap
-$ aws --profile=saac02-playground-iamadmin \
-      lambda update-function-code \
-      --function-name RuntimeTest \
-      --zip-file fileb://lambda.zip
+$ brew tap aws/tap
+$ brew install aws-sam-cli
+$ sam build
+$ sam deploy --guided --profile saac02-playground-iamadmin
 ```
