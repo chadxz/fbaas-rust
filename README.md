@@ -14,7 +14,9 @@ $ brew tap SergioBenitez/osxct
 $ brew install x86_64-unknown-linux-gnu
 $ echo "[target.x86_64-unknown-linux-gnu]\nlinker = \"x86_64-unknown-linux-gnu-gcc\"" >> ~/.cargo/config
 $ rustup target install x86_64-unknown-linux-gnu
-$ cargo build --target x86_64-unknown-linux-gnu --release
+$ brew tap aws/tap
+$ brew install aws-sam-cli
+$ make build
 ```
 
 ## Deploy
@@ -23,8 +25,7 @@ This project uses AWS SAM cli to manage deployment to AWS Lambda.
 `sam deploy` uses the aws cli default profile by default, so if you need to use a different profile, you can pass `--profile <your_profile>` to change it.
 
 ```
-$ brew tap aws/tap
-$ brew install aws-sam-cli
-$ sam build
 $ sam deploy --guided --profile saac02-playground-iamadmin
+# ...later, once you've saved your deploy config, you can use make
+$ make deploy
 ```

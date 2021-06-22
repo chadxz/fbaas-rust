@@ -1,13 +1,15 @@
-use lambda_runtime::{ handler_fn, Context, Error };
-use serde_json::{ json, Value };
+use lambda_http::lambda_runtime::Context;
+use lambda_http::handler;
+use lambda_http::{lambda_runtime, Request, IntoResponse};
+use lambda_http::lambda_runtime::Error;
+use serde_json::{ json };
 
 #[tokio::main]
 async fn main() -> Result<(), Error> {
-    let func = handler_fn(fizz_buzz);
-    lambda_runtime::run(func).await?;
+    lambda_runtime::run(handler(fizz_buzz)).await?;
     Ok(())
 }
 
-async fn fizz_buzz(_: Value, _: Context) -> Result<Value, Error> {
-    Ok(json!({ "statusCode": 200, "body": "{\"hello\": \"world\"}" }))
+async fn fizz_buzz(_: Request, _: Context) -> Result<impl IntoResponse, Error> {
+    Ok(json!({ "hello": "world!" }))
 }
