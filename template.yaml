@@ -6,7 +6,13 @@ Description: FizzBuzz as a Service
 Globals:
   Function:
     Timeout: 3
-
+  Api:
+    Domain:
+      DomainName: fbaas.cloud.chadxz.dev
+      CertificateArn: arn:aws:acm:us-east-1:586284076313:certificate/1d096fdd-e908-4341-b026-3b40f17769b7
+      EndpointConfiguration: EDGE
+      Route53:
+        HostedZoneId: Z07956462RTGJHGZI327V
 Resources:
   FizzBuzzFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
@@ -22,7 +28,6 @@ Resources:
           Properties:
             Path: /
             Method: get
-
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM

@@ -4,7 +4,7 @@ all: build
 target/x86_64-unknown-linux-gnu/release/bootstrap: src/main.rs Cargo.toml Cargo.lock
 	cargo build --release --target x86_64-unknown-linux-gnu
 
-build: target/x86_64-unknown-linux-gnu/release/bootstrap
+build: target/x86_64-unknown-linux-gnu/release/bootstrap template.yaml
 	sam build
 .PHONY: build
 
