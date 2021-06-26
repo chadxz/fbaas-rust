@@ -12,9 +12,10 @@ deploy: build
 	sam deploy
 .PHONY: deploy
 
-build-FizzBuzzFunction:
+build-FizzBuzzFunction: target/x86_64-unknown-linux-gnu/release/bootstrap
 	cp ./target/x86_64-unknown-linux-gnu/release/bootstrap $(ARTIFACTS_DIR)
 .PHONY: build-FizzBuzzFunction
 
 clean:
 	rm -rf .aws-sam target
+.PHONY: clean
