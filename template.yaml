@@ -31,3 +31,7 @@ Resources:
           Properties:
             Path: /{number}
             Method: get
+Outputs:
+  ApplicationUrl:
+    Description: "API Gateway endpoint URL for the application"
+    Value: !Sub "https://${ApiDomainName}/"
