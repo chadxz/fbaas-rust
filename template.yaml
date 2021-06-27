@@ -1,14 +1,17 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: FizzBuzz as a Service
-
+Parameters:
+  ApiDomainName:
+    Type: String
+    Default: fbaas.cloud.chadxz.dev
 # More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 3
   Api:
     Domain:
-      DomainName: fbaas.cloud.chadxz.dev
+      DomainName: !Ref ApiDomainName
       CertificateArn: arn:aws:acm:us-east-1:586284076313:certificate/1d096fdd-e908-4341-b026-3b40f17769b7
       EndpointConfiguration: EDGE
       Route53:

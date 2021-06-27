@@ -2,11 +2,15 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: FranzDiebold/github-env-vars-action@v2
       - uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
@@ -21,12 +25,19 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+      - uses: haya14busa/action-cond@v1.0.0
+        id: app_name
+        with:
+          cond: ${{ github.ref == 'refs/heads/main' }}
+          if_true: fbaas
+          if_false: fbaas-${CI_REF_NAME_SLUG}-${CI_SHA_SHORT}
       - run: sam build
       - run: |
           sam deploy --no-confirm-changeset \
                      --no-fail-on-empty-changeset \
-                     --stack-name="fbaas-rust" \
+                     --stack-name="${{ steps.app_name.outputs.value }}" \
                      --s3-bucket="aws-sam-cli-managed-default-samclisourcebucket-19gvdka7u74px" \
-                     --s3-prefix="fbaas-rust" \
+                     --s3-prefix="${{ steps.app_name.outputs.value }}" \
                      --region="us-east-1" \
+                     --parameter-overrides "ApiDomainName=${{ steps.app_name.outputs.value }}.cloud.chadxz.dev"\
                      --capabilities="CAPABILITY_IAM"
