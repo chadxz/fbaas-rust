@@ -1,0 +1,63 @@
+name: Production Deploy
+on:
+  push:
+    branches:
+      - main
+concurrency:
+  group: ${{ github.ref }}
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: FranzDiebold/github-env-vars-action@v2
+
+      - run: echo "API_DOMAIN_NAME=${{ steps.app_name.outputs.value }}.cloud.chadxz.dev" >> $GITHUB_ENV
+      - run: echo "APPLICATION_URL=https://${{ env.API_DOMAIN_NAME }}" >> $GITHUB_ENV
+
+      - name: Start Deployment
+        uses: bobheadxi/deployments@v0.6.0
+        if: ${{ !env.ACT }}
+        id: deployment
+        with:
+          step: start
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v2
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+          target: x86_64-unknown-linux-gnu
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - uses: aws-actions/setup-sam@v1
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - run: sam build
+      - run: |
+          sam deploy --no-confirm-changeset \
+                     --no-fail-on-empty-changeset \
+                     --stack-name="fbaas" \
+                     --s3-bucket="aws-sam-cli-managed-default-samclisourcebucket-19gvdka7u74px" \
+                     --s3-prefix="fbaas" \
+                     --region="us-east-1" \
+                     --parameter-overrides "ApiDomainName=${{ env.API_DOMAIN_NAME }}"\
+                     --capabilities="CAPABILITY_IAM"
+
+      - name: Seal Deployment
+        uses: bobheadxi/deployments@v0.5.2
+        if: ${{ always() && !env.ACT }}
+        with:
+          step: finish
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+          env_url: ${{ env.APPLICATION_URL }}
