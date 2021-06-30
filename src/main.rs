@@ -72,13 +72,13 @@ fn fizz_buzz(val: u16) -> Vec<String> {
         if i % 5 == 0 {
             str += "Buzz";
         }
-        if str == "" {
+        if str.is_empty() {
             str = i.to_string();
         }
         result.push(str);
     }
 
-    result.into()
+    result
 }
 
 #[cfg(test)]
