@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - run: echo "API_DOMAIN_NAME=${{ steps.app_name.outputs.value }}.cloud.chadxz.dev" >> $GITHUB_ENV
+      - run: echo "API_DOMAIN_NAME=fbaas.cloud.chadxz.dev" >> $GITHUB_ENV
       - run: echo "APPLICATION_URL=https://${{ env.API_DOMAIN_NAME }}" >> $GITHUB_ENV
 
       - name: Start Deployment
