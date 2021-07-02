@@ -24,5 +24,5 @@ jobs:
       - uses: chadxz/s3-delete-objects-action@v0.1.0
         with:
           bucket: aws-sam-cli-managed-default-samclisourcebucket-19gvdka7u74px
-          prefix: ${{ env.APP_NAME }}
+          prefix: ${{ env.APP_NAME }} # cleanup the S3 objects sam-cli uses to seed the cloudformation function creation
           allowEmptyPrefix: false

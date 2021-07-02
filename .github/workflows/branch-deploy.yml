@@ -9,7 +9,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: FranzDiebold/github-env-vars-action@v2
+      - uses: FranzDiebold/github-env-vars-action@v2 # add CI_ env vars
       - run: echo "ENVIRONMENT_NAME=branch-${{ env.CI_HEAD_REF_SLUG }}" >> $GITHUB_ENV
       - run: echo "APP_NAME=fbaas-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_ENV
       - run: echo "API_DOMAIN_NAME=${{ env.APP_NAME }}.cloud.chadxz.dev" >> $GITHUB_ENV
@@ -46,6 +46,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
 
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - run: sam build
       - run: |
           sam deploy --no-confirm-changeset \
@@ -56,16 +66,6 @@ jobs:
                      --region="us-east-1" \
                      --parameter-overrides "ApiDomainName=${{ env.API_DOMAIN_NAME }}"\
                      --capabilities="CAPABILITY_IAM"
-
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Seal Deployment
         uses: bobheadxi/deployments@v0.5.2

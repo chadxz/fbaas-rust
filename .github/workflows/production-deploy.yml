@@ -9,8 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: FranzDiebold/github-env-vars-action@v2
-
       - run: echo "API_DOMAIN_NAME=${{ steps.app_name.outputs.value }}.cloud.chadxz.dev" >> $GITHUB_ENV
       - run: echo "APPLICATION_URL=https://${{ env.API_DOMAIN_NAME }}" >> $GITHUB_ENV
 
@@ -40,6 +38,16 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1
+
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - run: sam build
       - run: |
