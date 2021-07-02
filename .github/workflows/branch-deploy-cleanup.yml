@@ -1,0 +1,28 @@
+name: Deployment Preview Cleanup
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: FranzDiebold/github-env-vars-action@v2
+      - run: echo "ENVIRONMENT_NAME=branch-${{ env.CI_HEAD_REF_SLUG }}" >> $GITHUB_ENV
+      - run: echo "APP_NAME=fbaas-${{ env.ENVIRONMENT_NAME }}" >> $GITHUB_ENV
+
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - run: aws cloudformation delete-stack --stack-name ${{ env.APP_NAME }}
+
+      - uses: chadxz/s3-delete-objects-action@v0.1.0
+        with:
+          bucket: aws-sam-cli-managed-default-samclisourcebucket-19gvdka7u74px
+          prefix: ${{ env.APP_NAME }}
+          allowEmptyPrefix: false
