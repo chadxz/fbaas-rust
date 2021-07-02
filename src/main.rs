@@ -70,7 +70,7 @@ fn fizz_buzz(val: u16) -> Vec<String> {
             str += "Fizz";
         }
         if i % 5 == 0 {
-            str += "Buzz";
+            str += "Bazz";
         }
         if str == "" {
             str = i.to_string();
